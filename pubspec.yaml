@@ -1,0 +1,10 @@
+name: self_service_api
+description: SelfService application API
+dependencies:
+    angular: '0.13.0'
+    browser: any
+    js: any
+    shadow_dom: any
+    unittest: any
+    route: any
+    json_object: any
