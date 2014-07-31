@@ -1,4 +1,7 @@
+#Install dependencies.
 Pub get
+
+#Start server.
 dart web/main.dart
 
 
