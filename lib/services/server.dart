@@ -26,7 +26,6 @@ class Server {
       var router = new Router(server)
       // Associate callbacks with URLs.
         ..serve(urls.applicationsUrl, method: 'GET').listen(applications.get)
-        ..serve(urls.postUrl, method: 'GET').listen(git.servePost)
         ..serve(urls.createRepoUrl, method: 'GET').listen(git.createRepo)
         ..defaultStream.listen(serveNotFound);
     });

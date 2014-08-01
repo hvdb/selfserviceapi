@@ -15,10 +15,14 @@ class Applications {
     var data = new List();
 
     var application = new JsonObject();
+
+
+    var gitConfiguration = new JsonObject();
+    gitConfiguration.repoInstance = 'stash';
+    gitConfiguration.repoUrl = 'http://stash.europe.intranet/';
+
     application.name = 'pManagePaymentAccountsWA';
-    application.gitConfigration = new JsonObject();
-    application.gitConfiguration.repoInstance = 'stash';
-    application.gitConfiguration.repoUrl = 'http://stash.europe.intranet/';
+    application.gitConfiguration = gitConfiguration;
     application.cmdbId = '2223';
 
     data.add(application);

@@ -5,7 +5,7 @@
 class GitRepo {
 
 
-  createRepo(gitRepoInstance, gitRepoName) {
+  static createRepo(gitRepoInstance, gitRepoName) {
 
   }
 

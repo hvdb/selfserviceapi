@@ -8,13 +8,6 @@ import '../providers/gitrepo.dart';
 class Git {
   Urls urls = new Urls();
 
-// Callback for a single post('/post/24', for example).
-    servePost(req) {
-      var postId = urls.postUrl.parse(req.uri.path)[0];
-      req.response.write('Blog post $postId');
-      req.response.close();
-    }
-
     createRepo(req) {
       //Check to see which kind of git repo is used.
       var urlParams = urls.createRepoUrl.parse(req.uri.path);
