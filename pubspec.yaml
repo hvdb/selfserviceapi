@@ -8,3 +8,4 @@ dependencies:
     unittest: any
     route: any
     json_object: any
+    mongo_dart: any

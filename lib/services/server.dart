@@ -3,16 +3,20 @@ import 'dart:io';
 import 'package:route/server.dart';
 
 import '../config/urls.dart';
-import 'git.dart';
 import 'applications.dart';
+
+import 'application.dart';
+
 
 class Server {
 
+
   start() {
 
-    Git git = new Git();
+
     Urls urls = new Urls();
     Applications applications = new Applications();
+    Application application = new Application();
 
     // Callback to handle illegal urls.
     serveNotFound(req) {
@@ -26,7 +30,7 @@ class Server {
       var router = new Router(server)
       // Associate callbacks with URLs.
         ..serve(urls.applicationsUrl, method: 'GET').listen(applications.get)
-        ..serve(urls.createRepoUrl, method: 'GET').listen(git.createRepo)
+        ..serve(urls.applicationDetailsUrl, method: 'GET').listen(application.get)
         ..defaultStream.listen(serveNotFound);
     });
 
