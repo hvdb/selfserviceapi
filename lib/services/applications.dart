@@ -43,12 +43,13 @@ class Applications {
 
 
   _handleStashRepoCreation(jsonObject,req) {
-;
-    Process.run('git', ['clone', 'ssh://git@stash.europe.intranet:7999/an/spectingular-modules.git']).then((_) =>
-    Process.run('cd', ['spectingular-modules']).then((_) =>
-    Process.run('git', ['checkout', 'selfservice'])));
 
-    new File('spectingular-modules/bower.json').readAsString().then((String contents) {
+    var _workingDir = 'spectingular-modules';
+
+    Process.run('git', ['clone', 'ssh://git@stash.europe.intranet:7999/an/spectingular-modules.git']).then((_) =>
+    Process.run('git', ['checkout', 'selfservice'], workingDirectory: _workingDir));
+print('switched');
+    new File(_workingDir+'/bower.json').readAsString().then((String contents) {
       var jsoncontent = JSON.decode(contents);
       var applicationName = jsonObject["name"];
       var sshUrl;
@@ -61,16 +62,16 @@ class Applications {
       jsoncontent["dependencies"][applicationName] = sshUrl;
 
 
-      new File('spectingular-modules/bower.json').writeAsString(JSON.encode(jsoncontent)).then((File file) {
+      new File(_workingDir+'/bower.json').writeAsString(JSON.encode(jsoncontent)).then((File file) {
 
-        Process.run('git',['commit', '-a','-m', '"Added new module '+applicationName+ '"']).then((_) =>
-        Process.run('git',['push', 'origin', 'selfservice']));
+        Process.run('git',['commit', '-a','-m', '"Added new module '+applicationName+ '"'], workingDirectory: _workingDir).then((_) =>
+        Process.run('git',['push', 'origin', 'selfservice'], workingDirectory: _workingDir));
+
+        Process.run('rm', ['-rf', 'spectingular-modules']);
 
 
       });
 
-
-      Process.run('rm', ['-rf', 'spectingular-modules']);
 
 
     });
