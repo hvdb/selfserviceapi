@@ -9,3 +9,5 @@ dependencies:
     route: any
     json_object: any
     mongo_dart: any
+    http: any
+

@@ -31,6 +31,8 @@ class Server {
       // Associate callbacks with URLs.
         ..serve(urls.applicationsUrl, method: 'GET').listen(applications.get)
         ..serve(urls.applicationDetailsUrl, method: 'GET').listen(application.get)
+        ..serve(urls.applicationsUrl, method: 'POST').listen(applications.createNew)
+        ..serve(urls.applicationsUrl, method: 'OPTIONS').listen(applications.optionsOk)
         ..defaultStream.listen(serveNotFound);
     });
 
