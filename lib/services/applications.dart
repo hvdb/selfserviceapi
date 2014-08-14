@@ -43,15 +43,22 @@ class Applications {
 
 
   _handleStashRepoCreation(jsonObject,req) {
+    GenericClient.addCorsHeaders(req);
 
-    var _workingDir = 'spectingular-modules';
+    if (jsonObject["errors"] != null) {
+      req.response.statusCode = HttpStatus.CONFLICT;
 
-    Process.run('git', ['clone', 'ssh://git@stash.europe.intranet:7999/an/spectingular-modules.git']).then((_) =>
-    Process.run('git', ['checkout', 'selfservice'], workingDirectory: _workingDir));
-print('switched');
-    new File(_workingDir+'/bower.json').readAsString().then((String contents) {
-      var jsoncontent = JSON.decode(contents);
+    } else {
+
+      var _workingDir = 'works/spectingular-modules';
+      Process.runSync('rm', ['-rf', 'spectingular-modules'], workingDirectory: 'works/');
+      Process.runSync('git', ['clone', 'ssh://git@stash.europe.intranet:7999/an/spectingular-modules.git'], workingDirectory: 'works/');
+      Process.runSync('git', ['checkout', 'selfservice'], workingDirectory: _workingDir);
+      Process.runSync('git', ['reset', '--hard'], workingDirectory: _workingDir);
+
+      var jsonContent = JSON.decode(new File(_workingDir + '/bower.json').readAsStringSync());
       var applicationName = jsonObject["name"];
+
       var sshUrl;
       if (jsonObject["links"]["clone"][0]["name"] == 'ssh') {
         sshUrl = jsonObject["links"]["clone"][0]["href"];
@@ -59,43 +66,20 @@ print('switched');
         sshUrl = jsonObject["links"]["clone"][1]["href"];
       }
 
-      jsoncontent["dependencies"][applicationName] = sshUrl;
+      jsonContent["dependencies"][applicationName] = sshUrl;
 
+      new File(_workingDir + '/bower.json').writeAsStringSync(JSON.encode(jsonContent));
 
-      new File(_workingDir+'/bower.json').writeAsString(JSON.encode(jsoncontent)).then((File file) {
+      Process.runSync('git', ['commit', '-a', '-m', 'Added new module ' + applicationName], workingDirectory: _workingDir);
+      Process.runSync('git', ['push', 'origin', 'selfservice'], workingDirectory: _workingDir);
 
-        Process.run('git',['commit', '-a','-m', '"Added new module '+applicationName+ '"'], workingDirectory: _workingDir).then((_) =>
-        Process.run('git',['push', 'origin', 'selfservice'], workingDirectory: _workingDir));
-
-        Process.run('rm', ['-rf', 'spectingular-modules']);
-
-
-      });
+    }
 
 
 
-    });
-
-
-
-    //git clone
-    //Process.run('git clone ', ['-l']).then((ProcessResult results) {
-    //  print(results.stdout);
-    //});
-
-
-    //read file, add new line.
-    //git commit
-    //git push
-    //remove dir
-
-    GenericClient.addCorsHeaders(req);
-
-    //req.response.write(JSON.encode(data));
     req.response.close();
 
   }
-
 
   optionsOk(req) {
     GenericClient.addCorsHeaders(req);
@@ -106,7 +90,22 @@ print('switched');
 
 // get all the applications
   get(req) {
-    GenericClient.getlistOfRepos(GitConfig.stashApiUrl, req);
+    var requestContent;
+    req.listen((List<int> buffer) {
+      requestContent = new String.fromCharCodes(buffer);
+    }, onDone: () {
+
+      var url;
+
+      if (requestContent != null) {
+       url = GitConfig.stashApiUrl;
+      } else {
+        url =GitConfig.stashApiUrl + '?' +req.uri.query;
+      }
+
+      GenericClient.getlistOfRepos(url, req);
+
+    });
 
   }
 

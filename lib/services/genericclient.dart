@@ -70,15 +70,23 @@ class GenericClient {
   }
 
 
-  static onLoadedDataListRepos(jsonContent, req) {
+  static onLoadedDataListRepos(object, req) {
 
-    var data = new List();
+    var applications = new List();
 
-    for (var app in JSON.decode(jsonContent)["values"]) {
-      data.add(makeApplication(app));
+    var jsonContent = JSON.decode(object);
+
+    for (var app in jsonContent["values"]) {
+      applications.add(makeApplication(app));
     }
 
     addCorsHeaders(req);
+
+    var data = new JsonObject();
+    data.applications = applications;
+    data.limit = jsonContent["limit"];
+    data.nextPageStart = jsonContent["nextPageStart"];
+
 
     req.response.write(JSON.encode(data));
     req.response.close();
