@@ -21,7 +21,7 @@ class Application {
 
     var applicationName =  urls.applicationDetailsUrl.parse(req.uri.path)[0];
 
-    GenericClient.getSingleRepo(GitConfig.stashApiUrl +'/'+applicationName, req);
+    GenericClient.getSingleRepo(STASH_API_URL +'/'+applicationName, req);
 
 
   }

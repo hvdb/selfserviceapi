@@ -22,7 +22,7 @@ class Applications {
     }, onDone: () {
 
       //Call stash maak een nieuwe repo aan.
-      var stashUrl = GitConfig.stashApiUrl;
+      var stashUrl = STASH_API_URL;
 
       var jsonObject = JSON.encode(JSON.decode(requestContent));
 
@@ -44,19 +44,21 @@ class Applications {
 
   _handleStashRepoCreation(jsonObject,req) {
     GenericClient.addCorsHeaders(req);
-
+    bool result = true;
     if (jsonObject["errors"] != null) {
       req.response.statusCode = HttpStatus.CONFLICT;
 
     } else {
 
-      var _workingDir = 'works/spectingular-modules';
-      Process.runSync('rm', ['-rf', 'spectingular-modules'], workingDirectory: 'works/');
-      Process.runSync('git', ['clone', 'ssh://git@stash.europe.intranet:7999/an/spectingular-modules.git'], workingDirectory: 'works/');
-      Process.runSync('git', ['checkout', 'selfservice'], workingDirectory: _workingDir);
-      Process.runSync('git', ['reset', '--hard'], workingDirectory: _workingDir);
 
-      var jsonContent = JSON.decode(new File(_workingDir + '/bower.json').readAsStringSync());
+      var _workingDir = 'works/spectingular-modules';
+
+      result = _runProcess('rm',['-rf', 'spectingular-modules'], 'works/', result);
+      result = _runProcess('git',['clone', STASH_SSH_URL+ '/an/spectingular-modules.git'] , 'works/', result);
+      result = _runProcess('git',['checkout', 'master'], _workingDir, result);
+      result = _runProcess('git',['reset', '--hard'], _workingDir, result);
+
+      var spectingularModulesJson = JSON.decode(new File(_workingDir + '/bower.json').readAsStringSync());
       var applicationName = jsonObject["name"];
 
       var sshUrl;
@@ -66,20 +68,94 @@ class Applications {
         sshUrl = jsonObject["links"]["clone"][1]["href"];
       }
 
-      jsonContent["dependencies"][applicationName] = sshUrl;
+      spectingularModulesJson["dependencies"][applicationName] = sshUrl;
 
-      new File(_workingDir + '/bower.json').writeAsStringSync(JSON.encode(jsonContent));
+      new File(_workingDir + '/bower.json').writeAsStringSync(JSON.encode(spectingularModulesJson));
 
-      Process.runSync('git', ['commit', '-a', '-m', 'Added new module ' + applicationName], workingDirectory: _workingDir);
-      Process.runSync('git', ['push', 'origin', 'selfservice'], workingDirectory: _workingDir);
+      result = _runProcess('git', ['commit', '-a', '-m', 'Added new module ' + applicationName], _workingDir, result);
+      result = _runProcess('git', ['push', 'origin', 'master'], _workingDir, result);
 
+      result = _initializeGitModule(applicationName, sshUrl, result);
+
+      result = _makeAndAddBranch('develop', applicationName, result);
+      result = _makeAndAddBranch('release-a', applicationName,result);
+      result = _makeAndAddBranch('release-prd', applicationName, result);
+
+      result = _generateModuleAndPush(applicationName, result);
+
+}
+
+    if (!result) {
+      req.response.statusCode = HttpStatus.NOT_FOUND;
     }
-
-
 
     req.response.close();
 
   }
+
+  /**
+   * Run a process using the [processCommand] as the function and the [processCommandAttributes] as the arguments.
+   * And use the [workingDir] as workingdirectory.
+   * But first evaluate the [result] to see if there was not problem in a previous process.
+   *
+   * returns the bool of the result. (if exitcode != 0 = false)
+   */
+  _runProcess(String processCommand, List<String> processCommandAttributes, String workingDir, bool result) {
+
+    if (result) {
+      ProcessResult res = Process.runSync(processCommand, processCommandAttributes, workingDirectory: workingDir);
+      if (res.exitCode != 0) {
+        print('error during the following Process');
+        print('run process ' +processCommand);
+        print('run attr ' +processCommandAttributes.toString());
+      }
+      return res.exitCode == 0 ;
+
+    }
+    return result;
+  }
+
+
+  bool _generateModuleAndPush(String applicationName, bool result) {
+
+    result = _runProcess('git' ,['checkout', 'develop'],  'works/'+applicationName, result);
+
+    result = _runProcess('yo' ,['submodule',applicationName],  'works/'+applicationName, result);
+
+    result = _runProcess('git' ,['add', '--all'],  'works/'+applicationName, result);
+    result = _runProcess('git' ,['commit', '-m', 'First develop commit, Added skeleton app'],  'works/'+applicationName, result);
+    result = _runProcess('git' ,['push','-u', 'origin', 'develop'],  'works/'+applicationName, result);
+
+    result = _runProcess('rm', ['-rf', applicationName],  'works/', result);
+    return result;
+  }
+
+  bool _initializeGitModule(String applicationName, String sshUrl,  bool result) {
+
+    //Initialize the git repo for the application
+    result = _runProcess('mkdir' ,[applicationName],  'works/', result);
+
+    result = _runProcess('git' ,['init'],  'works/'+applicationName, result);
+    result = _runProcess('git' ,['remote', 'add', 'origin', sshUrl],  'works/'+applicationName, result);
+
+    new File('works/' +applicationName + '/created').writeAsStringSync("Created by Are you being served?");
+
+    result = _runProcess('git' ,['add', '.'],  'works/'+applicationName, result);
+    result = _runProcess('git' ,['commit', '-m', 'First commit, added branches'],  'works/'+applicationName, result);
+    result = _runProcess('git' ,['push','-u', 'origin', 'master'],  'works/'+applicationName, result);
+    return result;
+  }
+
+
+
+  bool _makeAndAddBranch(String branch, String applicationName, bool result) {
+
+    result = _runProcess('git' ,['checkout', '-b', branch],  'works/'+applicationName, result);
+    result = _runProcess('git' ,['push','-u', 'origin', branch],  'works/'+applicationName, result);
+    return result;
+
+  }
+
 
   optionsOk(req) {
     GenericClient.addCorsHeaders(req);
@@ -98,9 +174,9 @@ class Applications {
       var url;
 
       if (requestContent != null) {
-       url = GitConfig.stashApiUrl;
+       url = STASH_API_URL;
       } else {
-        url =GitConfig.stashApiUrl + '?' +req.uri.query;
+        url =STASH_API_URL + '?' +req.uri.query;
       }
 
       GenericClient.getlistOfRepos(url, req);
