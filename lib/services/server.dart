@@ -12,7 +12,7 @@ class Server {
 
 
   start() {
-
+print('server is started!');
 
     Urls urls = new Urls();
     Applications applications = new Applications();
@@ -25,7 +25,7 @@ class Server {
       req.response.close();
     }
 
-    HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 9090).then((server) {
+    HttpServer.bind('0.0.0.0', 8080).then((server) {
 
       var router = new Router(server)
       // Associate callbacks with URLs.

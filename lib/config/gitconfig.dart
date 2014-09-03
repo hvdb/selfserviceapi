@@ -7,7 +7,7 @@ library GitConfig;
 
 
 
-final STASH_IP = '192.168.248.155';
+final STASH_IP = '192.168.248.146';
 final STASH_BASE_API_URL = 'http://'+STASH_IP+':7990/rest/api/1.0/';
 final STASH_API_URL = STASH_BASE_API_URL + 'projects/AN/repos';
 final STASH_SSH_URL = 'ssh://git@'+STASH_IP+':7999';
