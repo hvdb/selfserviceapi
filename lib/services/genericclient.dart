@@ -14,6 +14,10 @@ class GenericClient {
 
     HttpClient client = new HttpClient();
     return client.getUrl(Uri.parse(url)).then((HttpClientRequest request) {
+      //temp
+      var base64 = 'YWRtaW46YWRtaW4=';
+
+      request.headers.add('Authorization', 'Basic '+base64);
       return request.close();
     });
   }
@@ -34,6 +38,25 @@ class GenericClient {
       return request.close();
     });
   }
+
+
+  static put(url, jsonData) {
+
+    HttpClient client = new HttpClient();
+    return client.putUrl(Uri.parse(url)).then((HttpClientRequest request) {
+
+      //temp
+      var base64 = 'YWRtaW46YWRtaW4=';
+
+      request.headers.add('Authorization', 'Basic '+base64);
+      request.headers.contentType = ContentType.JSON;
+      request.write(jsonData);
+
+      return request.close();
+    });
+  }
+
+
 
 
 

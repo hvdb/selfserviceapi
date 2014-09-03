@@ -2,10 +2,10 @@ library self_service_services_http;
 import 'dart:io';
 import 'package:route/server.dart';
 
-import '../config/urls.dart';
-import 'applications.dart';
+import 'package:self_service_api/config/urls.dart';
+import 'package:self_service_api/services/applications.dart';
 
-import 'application.dart';
+import 'package:self_service_api/services/application.dart';
 
 
 class Server {
