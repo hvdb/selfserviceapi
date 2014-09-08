@@ -98,7 +98,7 @@ class Applications {
       log.fine('handling creation of stash repo.');
       var _workingDir = 'works/spectingular-modules';
 
-      result = _runProcess('rm',['-rf', 'spectingular-modules'], 'works/', result);
+
       result = _runProcess('git',['clone', '$STASH_SSH_URL/an/spectingular-modules.git'] , 'works/', result);
       result = _runProcess('git',['checkout', 'master'], _workingDir, result);
       result = _runProcess('git',['reset', '--hard'], _workingDir, result);
@@ -106,7 +106,7 @@ class Applications {
       var spectingularModulesJson = JSON.decode(new File('$_workingDir/bower.json').readAsStringSync());
       var applicationName = jsonObject["name"];
 
-      var sshUrl;
+      String sshUrl;
       if (jsonObject["links"]["clone"][0]["name"] == 'ssh') {
         sshUrl = jsonObject["links"]["clone"][0]["href"];
       } else {
@@ -118,6 +118,7 @@ class Applications {
       new File('$_workingDir/bower.json').writeAsStringSync(JSON.encode(spectingularModulesJson));
 
       result = _runProcess('git', ['commit', '-a', '-m', 'Added new module $applicationName' ], _workingDir, result);
+
       result = _runProcess('git', ['push', 'origin', 'master'], _workingDir, result);
 
       result = _initializeGitModule(applicationName, sshUrl, result);
@@ -127,6 +128,7 @@ class Applications {
       result = _makeAndAddBranch('release-prd', applicationName, result);
 
       result = _generateModuleAndPush(applicationName, result);
+      result = _runProcess('rm',['-rf', 'spectingular-modules'], 'works/', result);
 
       log.fine('Done! result is $result');
 }
@@ -150,10 +152,16 @@ class Applications {
     log.finer('running process $processCommand');
     if (result) {
       ProcessResult res = Process.runSync(processCommand, processCommandAttributes, workingDirectory: workingDir);
+      print('stdout');
+      print(res.stdout);
       if (res.exitCode != 0) {
+        print(res.stderr);
         print('error during the following Process');
         print('run process $processCommand');
         print('run attr $processCommandAttributes');
+
+        _runProcess('rm',['-rf', 'spectingular-modules'], 'works/', result);
+
       }
       return res.exitCode == 0 ;
 
@@ -166,29 +174,32 @@ class Applications {
 
     result = _runProcess('git' ,['checkout', 'develop'],  'works/$applicationName', result);
 
-    result = _runProcess('yo' ,['submodule',applicationName],  'works/$applicationName', result);
+    result = _runProcess('yo' ,['-no-insight','submodule','$applicationName'],  'works/$applicationName', result);
 
     result = _runProcess('git' ,['add', '--all'],  'works/$applicationName', result);
     result = _runProcess('git' ,['commit', '-m', 'First develop commit, Added skeleton app'],  'works/$applicationName', result);
     result = _runProcess('git' ,['push','-u', 'origin', 'develop'],  'works/$applicationName', result);
 
-    result = _runProcess('rm', ['-rf', applicationName],  'works/', result);
+    result = _runProcess('rm', ['-rf', '$applicationName'],  'works/', result);
     return result;
   }
 
   bool _initializeGitModule(String applicationName, String sshUrl,  bool result) {
 
     //Initialize the git repo for the application
-    result = _runProcess('mkdir' ,[applicationName],  'works/', result);
+    result = _runProcess('mkdir' ,['-m', '777','$applicationName'],  'works', result);
 
     result = _runProcess('git' ,['init'],  'works/$applicationName', result);
-    result = _runProcess('git' ,['remote', 'add', 'origin', sshUrl],  'works/$applicationName', result);
+    //result = _runProcess('git' ,['remote', 'add', 'origin', sshUrl],  'works/$applicationName', result);
+    result = _runProcess('git', ['remote', 'add', 'origin', '$STASH_SSH_URL/an/$applicationName.git'],  'works/$applicationName', result);
 
     new File('works/$applicationName/created').writeAsStringSync("Created by Are you being served?");
 
     result = _runProcess('git' ,['add', '.'],  'works/$applicationName', result);
     result = _runProcess('git' ,['commit', '-m', 'First commit, added branches'],  'works/$applicationName', result);
+
     result = _runProcess('git' ,['push','-u', 'origin', 'master'],  'works/$applicationName', result);
+
     return result;
   }
 
@@ -196,8 +207,8 @@ class Applications {
 
   bool _makeAndAddBranch(String branch, String applicationName, bool result) {
 
-    result = _runProcess('git' ,['checkout', '-b', branch],  'works/$applicationName', result);
-    result = _runProcess('git' ,['push','-u', 'origin', branch],  'works/$applicationName', result);
+    result = _runProcess('git' ,['checkout', '-b', '$branch'],  'works/$applicationName', result);
+    result = _runProcess('git' ,['push','-u', 'origin', '$branch'],  'works/$applicationName', result);
     return result;
 
   }

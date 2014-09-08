@@ -6,13 +6,16 @@ import 'package:self_service_api/config/urls.dart';
 import 'package:self_service_api/services/applications.dart';
 
 import 'package:self_service_api/services/application.dart';
+import 'package:self_service_api/config/gitconfig.dart';
 
 
 class Server {
 
 
-  start() {
-print('server is started!');
+  start(String stashIp) {
+print('server is started! using stash Ip $stashIp');
+
+    STASH_IP = stashIp;
 
     Urls urls = new Urls();
     Applications applications = new Applications();
@@ -25,7 +28,7 @@ print('server is started!');
       req.response.close();
     }
 
-    HttpServer.bind('0.0.0.0', 8080).then((server) {
+    HttpServer.bind('0.0.0.0', 9090).then((server) {
 
       var router = new Router(server)
       // Associate callbacks with URLs.
