@@ -6,17 +6,16 @@ dart web/main.dart --stash-ip 10.0.0.1
 
 
 #create docker image.
-
-
+docker build -t selfservice_api .
+(This uses the boot2docker ip for connecting to stash. please change this ip if needed)
 
 
 #Stash is needed.
 Make sure you also start a stash container.
-docker pull **/stash
+docker pull mechatoni/stash
 
 install it via the setup (get license etc)
 Clone the spectingular-modules. (or run script to import it)
-
 
 > TODO make a protractor script for this.
 
