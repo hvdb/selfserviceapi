@@ -7,7 +7,7 @@ import 'package:self_service_api/services/applications.dart';
 
 import 'package:self_service_api/services/application.dart';
 import 'package:self_service_api/config/gitconfig.dart';
-
+import 'package:self_service_api/build/stash_repo_changed.dart';
 
 class Server {
 
@@ -20,7 +20,7 @@ print('server is started! using stash Ip $stashIp');
     Urls urls = new Urls();
     Applications applications = new Applications();
     Application application = new Application();
-
+    StashRepoChanged stashRepoChanged = new StashRepoChanged();
     // Callback to handle illegal urls.
     serveNotFound(req) {
       req.response.statusCode = HttpStatus.NOT_FOUND;
@@ -35,6 +35,7 @@ print('server is started! using stash Ip $stashIp');
         ..serve(urls.applicationsUrl, method: 'GET').listen(applications.get)
         ..serve(urls.applicationDetailsUrl, method: 'GET').listen(application.get)
         ..serve(urls.applicationsUrl, method: 'POST').listen(applications.createNew)
+        ..serve(urls.stashRepoChangedPost, method: 'GET').listen(stashRepoChanged.handleRepoChange)
         ..serve(urls.applicationsUrl, method: 'OPTIONS').listen(applications.optionsOk)
         ..defaultStream.listen(serveNotFound);
     });

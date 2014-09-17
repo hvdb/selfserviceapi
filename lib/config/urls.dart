@@ -12,4 +12,6 @@ class Urls {
   final postUrl = new UrlPattern(r'/post/(\d+)\/?');
 
 
+  final stashRepoChangedPost = new UrlPattern(r'/stash/commit\/?');
+
 }
