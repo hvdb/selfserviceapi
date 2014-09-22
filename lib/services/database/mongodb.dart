@@ -3,17 +3,36 @@ import 'dart:async';
 
 class MongoDb {
 
-  _retrieveAllApplicationForEnv(String env) {
 
-    Db db = new Db("mongodb://127.0.0.1/build-env");
+
+
+
+
+
+
+
+  retrieveAllApplicationForEnv(String env) {
+    Db db = new Db("mongodb://test:test@192.168.59.103/applicationconfig");
+    db.open().then((c){
+
+      DbCollection collection = db.collection('applications');
+    }).then((v){
+      print(v);
+      db.close();
+    });
+  }
+
+  insertTest(String env) {
+
+    Db db = new Db("mongodb://test:test@192.168.59.103/applicationconfig");
 
     ObjectId id;
     Stopwatch stopwatch = new Stopwatch()..start();
     DbCollection test;
     db.open().then((_){
-      test = db.collection('test');
+      test = db.collection('applications');
       var data = [];
-      for(num i = 0; i<1000; i++){
+      for(num i = 0; i<100; i++){
         data.add({'value': i});
       }
       test.drop().then((_) {

@@ -15,7 +15,7 @@ void main(List<String> arguments) {
 
   stashIp =results["stash-ip"];
 
-  Logger.root.level = Level.FINE;
+  Logger.root.level = Level.FINEST;
   Logger.root.onRecord.listen((LogRecord r) { print(r.message); });
   Server server = new Server();
   server.start(stashIp);

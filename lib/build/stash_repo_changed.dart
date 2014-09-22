@@ -8,6 +8,8 @@ import 'package:self_service_api/config/urls.dart';
 import "package:json_object/json_object.dart";
 import 'package:self_service_api/config/gitconfig.dart';
 import 'package:self_service_api/services/genericclient.dart';
+import 'package:self_service_api/services/database/mongodb.dart';
+
 
 
 class StashRepoChanged {
@@ -20,8 +22,9 @@ class StashRepoChanged {
     print('print $changedRepo');
 
 
+    MongoDb db = new MongoDb();
 
-
+    db.retrieveAllApplicationForEnv('bla');
 
 
 

@@ -35,8 +35,11 @@ print('server is started! using stash Ip $stashIp');
         ..serve(urls.applicationsUrl, method: 'GET').listen(applications.get)
         ..serve(urls.applicationDetailsUrl, method: 'GET').listen(application.get)
         ..serve(urls.applicationsUrl, method: 'POST').listen(applications.createNew)
-        ..serve(urls.stashRepoChangedPost, method: 'GET').listen(stashRepoChanged.handleRepoChange)
         ..serve(urls.applicationsUrl, method: 'OPTIONS').listen(applications.optionsOk)
+        ..serve(urls.applicationMergeEnv, method: 'POST').listen(application.mergeBranche)
+        ..serve(urls.applicationMergeEnv, method: 'OPTIONS').listen(applications.optionsOk)
+        //..serve(urls.stashRepoChangedPost, method: 'GET').listen(stashRepoChanged.handleRepoChange)
+
         ..defaultStream.listen(serveNotFound);
     });
 
