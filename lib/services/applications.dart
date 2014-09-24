@@ -56,10 +56,10 @@ class Applications {
       response.transform(UTF8.decoder).listen((contents) {
         var res = JSON.decode(contents);
         if (res["errors"] != null) {
-          for (var error in res["errors"]) {
+          for (var err in res["errors"]) {
             log.severe('ERROR! Setting the repoadmin did not go well. $res');
             error = true;
-            if (error["message"].contains('No such users')) {
+            if (err["message"].contains('No such users')) {
               req.response.statusCode = HttpStatus.EXPECTATION_FAILED;
               log.severe('repoadmin is unknow $repoAdmin');
             } else {
