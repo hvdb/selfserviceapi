@@ -90,7 +90,7 @@ class Applications {
       error = true;
     }
 
-
+    String applicationName;
     if (!error) {
       log.fine('handling creation of stash repo.');
       var _workingDir = 'works/spectingular-modules';
@@ -101,7 +101,7 @@ class Applications {
       result = _runProcess('git',['reset', '--hard'], _workingDir, result);
 
       var spectingularModulesJson = JSON.decode(new File('$_workingDir/bower.json').readAsStringSync());
-      var applicationName = jsonObject["name"];
+      applicationName = jsonObject["name"];
 
       String sshUrl;
       if (jsonObject["links"]["clone"][0]["name"] == 'ssh') {
@@ -125,11 +125,13 @@ class Applications {
       result = _makeAndAddBranch('release-prd', applicationName, result);
 
       result = _generateModuleAndPush(applicationName, result);
-      result = _runProcess('rm',['-rf', 'spectingular-modules'], 'works/', result);
+
 
       log.fine('Done! result is $result');
-}
+    }
 
+    result = _runProcess('rm',['-rf', 'spectingular-modules'], 'works/', result);
+    result = _runProcess('rm', ['-rf', '$applicationName'],  'works/', result);
     if (!result) {
       req.response.statusCode = HttpStatus.NOT_FOUND;
     }
@@ -157,8 +159,6 @@ class Applications {
         print('run process $processCommand');
         print('run attr $processCommandAttributes');
 
-        _runProcess('rm',['-rf', 'spectingular-modules'], 'works/', result);
-
       }
       return res.exitCode == 0 ;
 
@@ -177,7 +177,6 @@ class Applications {
     result = _runProcess('git' ,['commit', '-m', 'First develop commit, Added skeleton app'],  'works/$applicationName', result);
     result = _runProcess('git' ,['push','-u', 'origin', 'develop'],  'works/$applicationName', result);
 
-    result = _runProcess('rm', ['-rf', '$applicationName'],  'works/', result);
     return result;
   }
 
