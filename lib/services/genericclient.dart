@@ -130,7 +130,11 @@ class GenericClient {
 
         addCorsHeaders(req);
 
-        req.response.write(JSON.encode(makeApplication(JSON.decode(contents))));
+        try {
+          req.response.write(JSON.encode(makeApplication(JSON.decode(contents))));
+        } catch (e) {
+          req.response.write('error $e');
+        }
         req.response.close();
 
       });

@@ -20,6 +20,7 @@ Clone the spectingular-modules. (or run script to import it)
 > TODO make a protractor script for this.
 
 
+docker run -p 8889:9090 -d selfserviceapi
 
 
 
