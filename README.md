@@ -23,5 +23,35 @@ Clone the spectingular-modules. (or run script to import it)
 docker run -p 8889:9090 -d selfserviceapi
 
 
+#How to run the complete application.
+
+Make sure the generator-submodue is in setup directory.
+
+Start stash. docker pull mechatoni/stash
+docker run -d mechatoni/stash -p 7990:7990 -p 7999:7999
+
+Run the installation wizard.
+Add project: Angular (AN)
+
+Import spectingular-modules. (git clone change remote ip and push)
+
+Start this container. (api)
+
+Start selfservice. (see other project.)
+
+
+start jenkins container if wanted:
+docker run -p 8080:8080 jenkins
+
+add job: build-angular-project 
+parameterized build: buildIndicator
+
+jenkins config:
+
+This gets the bower.json
+curl --request get 'http://192.168.59.103:8889/build/information'${buildIndicator}
+
+
+
 
 [ ![Codeship Status for hvdb/selfserviceapi](https://www.codeship.io/projects/0fadcc10-fa43-0131-9eeb-3aac33d676db/status)](https://www.codeship.io/projects/29031)
