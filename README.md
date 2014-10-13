@@ -20,7 +20,7 @@ Clone the spectingular-modules. (or run script to import it)
 > TODO make a protractor script for this.
 
 
-docker run -p 8889:9090 -d selfserviceapi
+docker run -p 8889:9090 -d selfservice_api
 
 
 #How to run the complete application.
@@ -28,7 +28,7 @@ docker run -p 8889:9090 -d selfserviceapi
 Make sure the generator-submodue is in setup directory.
 
 Start stash. docker pull mechatoni/stash
-docker run -d mechatoni/stash -p 7990:7990 -p 7999:7999
+docker run -d  -p 7990:7990 -p 7999:7999 mechatoni/stash
 
 Run the installation wizard.
 Add project: Angular (AN)
@@ -41,7 +41,7 @@ Start selfservice. (see other project.)
 
 
 start jenkins container if wanted:
-docker run -p 8080:8080 jenkins
+docker run -d -p 8080:8080 jenkins
 
 add job: build-angular-project 
 parameterized build: buildIndicator
@@ -49,8 +49,25 @@ parameterized build: buildIndicator
 jenkins config:
 
 This gets the bower.json
-curl --request get 'http://192.168.59.103:8889/build/information'${buildIndicator}
+curl --request get 'http://192.168.59.103:8889/build/information/'${buildIndicator}
 
+
+MongoDB
+
+docker run -d -p 27017:27017 -p 28017:28017 -e MONGODB_PASS="mypass" tutum/mongodb
+
+
+Connect to mongodb.
+mongo --host 192.168.59.103
+
+use admin
+
+db.auth("admin", "mypass")
+
+use build
+
+
+db.addUser({user: "test", pwd: "test"})
 
 
 

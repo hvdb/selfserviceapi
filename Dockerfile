@@ -27,7 +27,7 @@ WORKDIR /container
 #Install dependencies.
 RUN pub get
 
-RUN npm install -g yo
+#RUN npm install -g yo
 
 
 #git clone generator

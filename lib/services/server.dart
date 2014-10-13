@@ -38,8 +38,10 @@ print('server is started! using stash Ip $stashIp');
         ..serve(urls.applicationsUrl, method: 'OPTIONS').listen(applications.optionsOk)
         ..serve(urls.applicationMergeEnv, method: 'POST').listen(application.mergeBranche)
         ..serve(urls.applicationMergeEnv, method: 'OPTIONS').listen(applications.optionsOk)
-        ..serve(urls.stashRepoChangedPost, method: 'GET').listen(stashRepoChanged.handleRepoChange)
-        ..serve(urls.buildInformation, method: 'GET').listen(stashRepoChanged.buildInformation)
+        ..serve(urls.stashRepoChangedPost, method: 'OPTIONS').listen(applications.optionsOk)
+        ..serve(urls.stashRepoChangedPost, method: 'POST').listen(stashRepoChanged.handleRepoChange)
+        ..serve(urls.buildInformationBuildIndicator, method: 'GET').listen(stashRepoChanged.retrieveBuildInformationWithBuildindicator)
+        ..serve(urls.buildInformationApplicationId, method: 'GET').listen(stashRepoChanged.retrieveBuildInformationWithApplicationId)
 
         ..defaultStream.listen(serveNotFound);
     });

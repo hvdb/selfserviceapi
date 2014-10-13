@@ -5,14 +5,8 @@ class MongoDb {
 
 
 
-
-
-
-
-
-
   retrieveAllApplicationForEnv(String env) {
-    Db db = new Db("mongodb://test:test@192.168.59.103/applicationconfig");
+    Db db = new Db("mongodb://admin:test@192.168.59.103/applicationconfig");
     db.open().then((c){
 
       DbCollection collection = db.collection('applications');
@@ -22,28 +16,60 @@ class MongoDb {
     });
   }
 
-  insertTest(String env) {
+  Future retrieveBuildInformationsWithApplicationId(String applicationId) {
+    var completer = new Completer();
 
-    Db db = new Db("mongodb://test:test@192.168.59.103/applicationconfig");
+    Db db = new Db("mongodb://test:test@192.168.59.103/build");
 
-    ObjectId id;
-    Stopwatch stopwatch = new Stopwatch()..start();
-    DbCollection test;
+    DbCollection information;
     db.open().then((_){
-      test = db.collection('applications');
-      var data = [];
-      for(num i = 0; i<100; i++){
-        data.add({'value': i});
-      }
-      test.drop().then((_) {
-        return Future.forEach(data,
-            (elem){
-          return test.insert(elem, writeConcern: WriteConcern.ACKNOWLEDGED);
-        });
-      }).then((_){
-        print(stopwatch.elapsed);
-        db.close();
+      information = db.collection('build');
+      return information.find(where.eq("applicationId", applicationId)).toList().then((data) {
+        completer.complete(data);
       });
+
+    }).then((o) {
+      print('close');
+      db.close();
+    });
+
+    return completer.future;
+
+  }
+
+
+  Future retrieveBuildInformationWithBuildIndicator(String buildIndicator) {
+    var completer = new Completer();
+
+    Db db = new Db("mongodb://test:test@192.168.59.103/build");
+
+    Cursor cursor;
+
+    DbCollection information;
+    db.open().then((_){
+      information = db.collection('build');
+      return information.find({"buildIndicator": "$buildIndicator"}).forEach((v){
+        completer.complete(v);
+      });
+    }).then((o) {
+      print('close');
+      db.close();
+    });
+
+    return completer.future;
+
+  }
+
+  insertBuildInformation(List<Map> buildInformationData) {
+
+    Db db = new Db("mongodb://test:test@192.168.59.103:27017/build");
+
+    DbCollection information;
+    db.open().then((_){
+      information = db.collection('build');
+      information.insertAll(buildInformationData);
+    }).then((o) {
+        db.close();
     });
 
 

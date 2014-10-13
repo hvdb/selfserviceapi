@@ -21,6 +21,7 @@ class Urls {
 
 
   final stashRepoChangedPost = new UrlPattern(r'/stash/commit\/?');
-  final buildInformation = new UrlPattern(r'/build/information/(\w+)\/?');
+  final buildInformationBuildIndicator = new UrlPattern(r'/build/information/id/(\w+)\/?');
+  final buildInformationApplicationId = new UrlPattern(r'/build/information/application/(\w+)\/?');
 
 }
