@@ -26,7 +26,6 @@ class CheckPRService {
       completer.complete(jsonObject);
     }).catchError((JsonObject jsonObject){
       print('errorHandlepullre CHECK $jsonObject');
-      GenericClient.addCorsHeaders(req);
       req.response.statusCode = HttpStatus.NOT_FOUND;
       req.response.write(JSON.encode(jsonObject));
       req.response.close();

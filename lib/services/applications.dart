@@ -79,7 +79,6 @@ class Applications {
 
   _handleStashRepoCreation(jsonObject,req, bool previousEventError) {
 
-    GenericClient.addCorsHeaders(req);
     bool result = true;
     bool error = false;
 
@@ -212,8 +211,6 @@ class Applications {
 
 
   optionsOk(req) {
-    GenericClient.addCorsHeaders(req);
-
     req.response.close();
   }
 

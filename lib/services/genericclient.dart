@@ -56,21 +56,6 @@ class GenericClient {
     });
   }
 
-
-
-
-
-  /**
-   * Add cors headers.
-   */
-  static addCorsHeaders(req) {
-    req.response.headers.add("Access-Control-Allow-Methods", "*");
-    req.response.headers.add("Access-Control-Allow-Origin", "*");
-    req.response.headers.add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-
-  }
-
-
   /**
    * Get a list of modules from stash.
    *
@@ -103,8 +88,6 @@ class GenericClient {
       applications.add(makeApplication(app));
     }
 
-    addCorsHeaders(req);
-
     var data = new JsonObject();
     data.applications = applications;
     data.limit = jsonContent["limit"];
@@ -127,8 +110,6 @@ class GenericClient {
 
     get(url).then((HttpClientResponse response) {
       response.transform(UTF8.decoder).listen((contents) {
-
-        addCorsHeaders(req);
 
         try {
           req.response.write(JSON.encode(makeApplication(JSON.decode(contents))));

@@ -23,7 +23,6 @@ class CreatePRService {
       completer.complete(jsonObject);
     }).catchError((JsonObject jsonObject){
       print('error create $jsonObject');
-      GenericClient.addCorsHeaders(req);
       req.response.statusCode = HttpStatus.NOT_FOUND;
       req.response.write(JSON.encode(jsonObject));
       req.response.close();

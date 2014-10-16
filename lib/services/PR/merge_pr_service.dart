@@ -21,7 +21,6 @@ class MergePRService {
     mergePullRequest.then((JsonObject jsonObject) {
       completer.complete(jsonObject);
     }).catchError((JsonObject jsonObject) {
-      GenericClient.addCorsHeaders(req);
       req.response.statusCode = HttpStatus.NOT_FOUND;
       req.response.write(JSON.encode(jsonObject));
       req.response.close();
