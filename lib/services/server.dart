@@ -2,9 +2,11 @@ library self_service_services_http;
 import 'dart:io';
 import 'package:route/server.dart';
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:self_service_api/config/urls.dart';
 import 'package:self_service_api/services/applications.dart';
+import 'package:dart_jwt/dart_jwt.dart';
 
 import 'package:self_service_api/services/application.dart';
 import 'package:self_service_api/config/gitconfig.dart';
@@ -61,21 +63,32 @@ print('server is started! using stash Ip $stashIp');
         ..defaultStream.listen(serveNotFound);
     });
 
-
-
   }
 
 
 
   Future<bool> requestFromSelfServiceApi(HttpRequest req) {
 
+    String jwtStr = req.headers.value('authorization');
+
     if (req.requestedUri.path.contains('login')) {
       return new Future.sync(() => true);
     } else {
-      if (req.session['user'] != null) {
+
+      if (req.method == 'OPTIONS') {
         return new Future.sync(() => true);
-      } else {
+      }
+
+      JsonWebToken jwt = new JsonWebToken.decode(jwtStr);
+      var settings = JSON.decode(new File('settings.json').readAsStringSync());
+      String sharedSecret = settings["sharedSecret"];
+      Set<ConstraintViolation> violations = jwt.validate(new JwtValidationContext.withSharedSecret(sharedSecret));
+
+      if (violations.isNotEmpty) {
         return new Future.sync(() => false);
+      } else {
+        print('jwt ok');
+        return new Future.sync(() => true);
       }
     }
   }
@@ -87,11 +100,13 @@ print('server is started! using stash Ip $stashIp');
     req.response.headers.add("Access-Control-Allow-Methods", "*");
     req.response.headers.add("Access-Control-Allow-Origin", "http://localhost:8080");
     req.response.headers.add("Access-Control-Allow-Credentials", "true");
+    req.response.headers.add("Access-Control-Expose-Headers", "authorization");
 
-    req.response.headers.add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    req.response.headers.add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, authorization");
     return new Future.sync(() => true);
   }
 
 
 
 }
+

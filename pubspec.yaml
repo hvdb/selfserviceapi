@@ -10,4 +10,6 @@ dependencies:
     json_object: any
     mongo_dart: any
     http: any
+    dart_jwt: ">=0.1.2 <0.2.0"
+
 

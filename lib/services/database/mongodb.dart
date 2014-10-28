@@ -14,7 +14,6 @@ class MongoDb {
         completer.complete(data);
       });
     }).then((o) {
-      print('close');
       db.close();
     });
     return completer.future;
@@ -71,7 +70,6 @@ class MongoDb {
         completer.complete(object);
       });
     }).then((o) {
-      print('close');
       db.close();
     });
     return completer.future;

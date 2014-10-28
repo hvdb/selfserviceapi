@@ -1,0 +1,5 @@
+{
+  "sharedSecret" : "heelgeheim",
+  "jenkinsIp" : "",
+  "stashIp" : "192.168.59.103"
+}
