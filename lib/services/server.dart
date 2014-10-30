@@ -39,23 +39,18 @@ print('server is started! using stash Ip $stashIp');
 
       var router = new Router(server)
       // Associate callbacks with URLs.
-        ..serve(urls.loginUrl, method: 'OPTIONS').listen(applications.optionsOk)
+        ..filter(new RegExp(r'^.*$'), requestFromSelfServiceApi)
         ..serve(urls.loginUrl, method: 'POST').listen(authentication.login)
 
-        ..filter(new RegExp(r'^.*$'), addCorsHeaders)
-        ..filter(new RegExp(r'^.*$'), requestFromSelfServiceApi)
+        ..serve(new RegExp(r'^.*$'), method: 'OPTIONS').listen(applications.optionsOk)
+
         ..serve(urls.applicationsUrl, method: 'GET').listen(applications.get)
         ..serve(urls.applicationDetailsUrl, method: 'GET').listen(application.get)
         ..serve(urls.applicationBranchConfig, method: 'GET').listen(application.getBranchConfiguration)
-        ..serve(urls.applicationBranchConfig, method: 'OPTIONS').listen(applications.optionsOk)
         ..serve(urls.applicationBranchConfig, method: 'POST').listen(application.postBranchConfiguration)
-
         ..serve(urls.applicationPullRequests, method: 'GET').listen(application.getListOfPullRequests)
         ..serve(urls.applicationsUrl, method: 'POST').listen(applications.createNew)
-        ..serve(urls.applicationsUrl, method: 'OPTIONS').listen(applications.optionsOk)
         ..serve(urls.applicationMergeEnv, method: 'POST').listen(application.mergeBranche)
-        ..serve(urls.applicationMergeEnv, method: 'OPTIONS').listen(applications.optionsOk)
-        ..serve(urls.stashRepoChangedPost, method: 'OPTIONS').listen(applications.optionsOk)
         ..serve(urls.stashRepoChangedPost, method: 'POST').listen(stashRepoChanged.handleRepoChange)
         ..serve(urls.buildInformationBuildIndicator, method: 'GET').listen(stashRepoChanged.retrieveBuildInformationWithBuildindicator)
         ..serve(urls.buildInformationApplicationId, method: 'GET').listen(stashRepoChanged.retrieveBuildInformationWithApplicationId)
@@ -68,6 +63,12 @@ print('server is started! using stash Ip $stashIp');
 
 
   Future<bool> requestFromSelfServiceApi(HttpRequest req) {
+    //TODO only for local.
+    addCorsHeaders(req);
+
+    if (req.method == 'OPTIONS') {
+      return new Future.sync(() => true);
+    }
 
     String jwtStr = req.headers.value('authorization');
 
@@ -75,9 +76,6 @@ print('server is started! using stash Ip $stashIp');
       return new Future.sync(() => true);
     } else {
 
-      if (req.method == 'OPTIONS') {
-        return new Future.sync(() => true);
-      }
 
       JsonWebToken jwt = new JsonWebToken.decode(jwtStr);
       var settings = JSON.decode(new File('settings.json').readAsStringSync());
@@ -85,6 +83,7 @@ print('server is started! using stash Ip $stashIp');
       Set<ConstraintViolation> violations = jwt.validate(new JwtValidationContext.withSharedSecret(sharedSecret));
 
       if (violations.isNotEmpty) {
+        print('jwt not ok');
         return new Future.sync(() => false);
       } else {
         print('jwt ok');
@@ -94,16 +93,14 @@ print('server is started! using stash Ip $stashIp');
   }
 
 
-
-
-  Future<bool> addCorsHeaders(HttpRequest req) {
+   addCorsHeaders(HttpRequest req) {
     req.response.headers.add("Access-Control-Allow-Methods", "*");
     req.response.headers.add("Access-Control-Allow-Origin", "http://localhost:8080");
     req.response.headers.add("Access-Control-Allow-Credentials", "true");
     req.response.headers.add("Access-Control-Expose-Headers", "authorization");
 
     req.response.headers.add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, authorization");
-    return new Future.sync(() => true);
+
   }
 
 
