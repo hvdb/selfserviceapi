@@ -34,7 +34,6 @@ print('server is started! using stash Ip $stashIp');
       req.response.close();
     }
 
-
     HttpServer.bind('0.0.0.0', 9090).then((server) {
 
       var router = new Router(server)
@@ -65,30 +64,30 @@ print('server is started! using stash Ip $stashIp');
   Future<bool> requestFromSelfServiceApi(HttpRequest req) {
     //TODO only for local.
     addCorsHeaders(req);
-
     if (req.method == 'OPTIONS') {
       return new Future.sync(() => true);
     }
 
     String jwtStr = req.headers.value('authorization');
-
     if (req.requestedUri.path.contains('login')) {
       return new Future.sync(() => true);
     } else {
 
+      try {
+        JsonWebToken jwt = new JsonWebToken.decode(jwtStr);
+        var settings = JSON.decode(new File('settings.json').readAsStringSync());
+        String sharedSecret = settings["sharedSecret"];
+        Set<ConstraintViolation> violations = jwt.validate(new JwtValidationContext.withSharedSecret(sharedSecret));
 
-      JsonWebToken jwt = new JsonWebToken.decode(jwtStr);
-      var settings = JSON.decode(new File('settings.json').readAsStringSync());
-      String sharedSecret = settings["sharedSecret"];
-      Set<ConstraintViolation> violations = jwt.validate(new JwtValidationContext.withSharedSecret(sharedSecret));
-
-      if (violations.isNotEmpty) {
-        print('jwt not ok');
+        if (violations.isNotEmpty) {
+          return new Future.sync(() => false);
+        } else {
+          return new Future.sync(() => true);
+        }
+      } catch (e) {
         return new Future.sync(() => false);
-      } else {
-        print('jwt ok');
-        return new Future.sync(() => true);
       }
+
     }
   }
 

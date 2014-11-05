@@ -2,15 +2,19 @@ library selfservice_services_git;
 
 import 'dart:io';
 import 'dart:convert';
+import "package:json_object/json_object.dart";
+
 import 'package:logging/logging.dart';
 
 import 'package:self_service_api/config/gitconfig.dart';
 import 'package:self_service_api/services/genericclient.dart';
+import 'package:self_service_api/services/database/mongodb.dart';
 
 
 class Applications {
 
   final Logger log = new Logger('Aapplications');
+  MongoDb _db = new MongoDb();
 
   createNew(req) {
 
@@ -93,11 +97,7 @@ class Applications {
       var _workingDir = 'works/spectingular-modules';
 
 
-      result = _runProcess('git',['clone', '$STASH_SSH_URL/an/spectingular-modules.git'] , 'works/', result);
-      result = _runProcess('git',['checkout', 'master'], _workingDir, result);
-      result = _runProcess('git',['reset', '--hard'], _workingDir, result);
 
-      var spectingularModulesJson = JSON.decode(new File('$_workingDir/bower.json').readAsStringSync());
       var applicationName = jsonObject["name"];
 
       String sshUrl;
@@ -107,14 +107,6 @@ class Applications {
         sshUrl = jsonObject["links"]["clone"][1]["href"];
       }
 
-      spectingularModulesJson["dependencies"][applicationName] = sshUrl;
-
-      new File('$_workingDir/bower.json').writeAsStringSync(JSON.encode(spectingularModulesJson));
-
-      result = _runProcess('git', ['commit', '-a', '-m', 'Added new module $applicationName' ], _workingDir, result);
-
-      result = _runProcess('git', ['push', 'origin', 'master'], _workingDir, result);
-
       result = _initializeGitModule(applicationName, sshUrl, result);
 
       result = _makeAndAddBranch('develop', applicationName, result);
@@ -122,7 +114,24 @@ class Applications {
       result = _makeAndAddBranch('release-prd', applicationName, result);
 
       result = _generateModuleAndPush(applicationName, result);
-      result = _runProcess('rm',['-rf', 'spectingular-modules'], 'works/', result);
+
+  //Make branch config.
+
+      JsonObject branchConfig = new JsonObject();
+      branchConfig.applicationId ='pDemo';
+      branchConfig.develop = 'develop';
+      branchConfig.test = 'master';
+      branchConfig.acceptatie = 'release-a';
+      branchConfig.productie = 'release-prd';
+
+      //TODO save to db.
+
+//Make default dependencies.
+
+      _insertDefaultDependencies(applicationName, 'develop');
+      _insertDefaultDependencies(applicationName, 'master');
+      _insertDefaultDependencies(applicationName, 'release-a');
+      _insertDefaultDependencies(applicationName, 'release-prd');
 
       log.fine('Done! result is $result');
 }
@@ -134,6 +143,33 @@ class Applications {
     req.response.close();
 
   }
+
+
+  /**
+   * Insert a default list of dependencies. Using the [applicationName] and the [environment] given.
+   */
+  void  _insertDefaultDependencies(String applicationName, String environment) {
+    Map dependencies = new Map();
+
+    JsonObject dependency = new JsonObject();
+    dependency.applicationId = applicationName;
+    dependency.environment = environment;
+
+    Map listOfDependencies = new Map();
+    listOfDependencies['spectingular-core'] = 'http://stash.europe.intranet/an/bladiebla.git';
+    listOfDependencies['spectingular-comp'] = 'http://stash.europe.intranet/an/comp.git';
+    listOfDependencies['angular-core'] = 'http://stash.europe.intranet/an/bladiebla.git';
+    listOfDependencies['angular-1'] = 'http://stash.europe.intranet/an/bladiebla1.git';
+    listOfDependencies['spectingular-2'] = 'http://stash.europe.intranet/an/bladiebla2.git';
+    listOfDependencies['spectingular-3'] = 'http://stash.europe.intranet/an/bladiebla3.git';
+    dependency.dependencies = listOfDependencies;
+
+    dependencies.addAll(dependency);
+
+    _db.insertDependencies(dependencies);
+
+  }
+
 
   /**
    * Run a process using the [processCommand] as the function and the [processCommandAttributes] as the arguments.
