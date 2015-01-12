@@ -25,8 +25,6 @@ class Authentication {
       String token = jwt.encode();
       req.response.headers.add('authorization', token);
 
-      print('ddd ${req.response.headers}');
-
       req.response.close();
 
 

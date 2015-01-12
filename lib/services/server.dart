@@ -94,7 +94,7 @@ print('server is started! using stash Ip $stashIp');
 
    addCorsHeaders(HttpRequest req) {
     req.response.headers.add("Access-Control-Allow-Methods", "*");
-    req.response.headers.add("Access-Control-Allow-Origin", "http://localhost:8080");
+    //req.response.headers.add("Access-Control-Allow-Origin", "http://localhost:7070");
     req.response.headers.add("Access-Control-Allow-Credentials", "true");
     req.response.headers.add("Access-Control-Expose-Headers", "authorization");
 

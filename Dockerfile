@@ -19,8 +19,8 @@ ADD setup        /container/setup
 ADD works        /container/works
 
 #Link the private npm generator module.
-WORKDIR /container/setup/generator-submodule
-RUN npm link
+#WORKDIR /container/setup/generator-submodule
+#RUN npm link
 
 WORKDIR /container
 
@@ -28,12 +28,6 @@ WORKDIR /container
 RUN pub get
 
 #RUN npm install -g yo
-
-
-#git clone generator
-#link npm module.
-
-#clone spectingular-modules.
 
 
 EXPOSE 9090

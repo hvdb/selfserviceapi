@@ -96,8 +96,6 @@ class Applications {
       log.fine('handling creation of stash repo.');
       var _workingDir = 'works/spectingular-modules';
 
-
-
       var applicationName = jsonObject["name"];
 
       String sshUrl;
@@ -115,24 +113,6 @@ class Applications {
 
       result = _generateModuleAndPush(applicationName, result);
 
-  //Make branch config.
-
-      JsonObject branchConfig = new JsonObject();
-      branchConfig.applicationId ='pDemo';
-      branchConfig.develop = 'develop';
-      branchConfig.test = 'master';
-      branchConfig.acceptatie = 'release-a';
-      branchConfig.productie = 'release-prd';
-
-      //TODO save to db.
-
-//Make default dependencies.
-
-      _insertDefaultDependencies(applicationName, 'develop');
-      _insertDefaultDependencies(applicationName, 'master');
-      _insertDefaultDependencies(applicationName, 'release-a');
-      _insertDefaultDependencies(applicationName, 'release-prd');
-
       log.fine('Done! result is $result');
 }
 
@@ -145,30 +125,6 @@ class Applications {
   }
 
 
-  /**
-   * Insert a default list of dependencies. Using the [applicationName] and the [environment] given.
-   */
-  void  _insertDefaultDependencies(String applicationName, String environment) {
-    Map dependencies = new Map();
-
-    JsonObject dependency = new JsonObject();
-    dependency.applicationId = applicationName;
-    dependency.environment = environment;
-
-    Map listOfDependencies = new Map();
-    listOfDependencies['spectingular-core'] = 'http://stash.europe.intranet/an/bladiebla.git';
-    listOfDependencies['spectingular-comp'] = 'http://stash.europe.intranet/an/comp.git';
-    listOfDependencies['angular-core'] = 'http://stash.europe.intranet/an/bladiebla.git';
-    listOfDependencies['angular-1'] = 'http://stash.europe.intranet/an/bladiebla1.git';
-    listOfDependencies['spectingular-2'] = 'http://stash.europe.intranet/an/bladiebla2.git';
-    listOfDependencies['spectingular-3'] = 'http://stash.europe.intranet/an/bladiebla3.git';
-    dependency.dependencies = listOfDependencies;
-
-    dependencies.addAll(dependency);
-
-    _db.insertDependencies(dependencies);
-
-  }
 
 
   /**

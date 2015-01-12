@@ -6,7 +6,7 @@ class MongoDb {
 
   Future retrieveBuildInformationsWithApplicationId(String applicationId) {
     var completer = new Completer();
-    Db db = new Db("mongodb://test:test@192.168.59.103/build");
+    Db db = new Db("mongodb://test:test@192.168.59.103:27017/build");
     DbCollection information;
     db.open().then((_){
       information = db.collection('build');
@@ -22,7 +22,7 @@ class MongoDb {
 
   Future retrieveBuildInformationWithBuildIndicator(String buildIndicator) {
     var completer = new Completer();
-    Db db = new Db("mongodb://test:test@192.168.59.103/build");
+    Db db = new Db("mongodb://test:test@192.168.59.103:27017/build");
     DbCollection information;
     db.open().then((_){
       information = db.collection('build');
@@ -62,7 +62,7 @@ class MongoDb {
 
   Future retrieveDependenciesForApplicationAndEnvironment(String applicationId, String environment) {
     var completer = new Completer();
-    Db db = new Db("mongodb://test:test@192.168.59.103/application");
+    Db db = new Db("mongodb://test:test@192.168.59.103:27017/application");
     DbCollection information;
     db.open().then((_){
       information = db.collection('dependencies');

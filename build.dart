@@ -21,7 +21,7 @@ void main() {
 
 
 //Checkout generator.
-  _runProcess('Checkout generator', 'git', ['clone', 'http://admin:admin@192.168.59.103:7990/scm/an/generator-submodule.git'],workingDir :'setup');
+//  _runProcess('Checkout generator', 'git', ['clone', 'http://admin:admin@192.168.59.103:7990/scm/an/generator-submodule.git'],workingDir :'setup');
 
   //Make docker
   _runProcess('Docker build', 'docker', [ 'build', '-t', 'selfservice_api', '.']);
