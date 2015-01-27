@@ -8,13 +8,11 @@ import 'package:logging/logging.dart';
 
 import 'package:self_service_api/config/gitconfig.dart';
 import 'package:self_service_api/services/genericclient.dart';
-import 'package:self_service_api/services/database/mongodb.dart';
 
 
 class Applications {
 
   final Logger log = new Logger('Aapplications');
-  MongoDb _db = new MongoDb();
 
   createNew(req) {
 
@@ -179,7 +177,7 @@ class Applications {
     //result = _runProcess('git' ,['remote', 'add', 'origin', sshUrl],  'works/$applicationName', result);
     result = _runProcess('git', ['remote', 'add', 'origin', '$STASH_SSH_URL/an/$applicationName.git'],  'works/$applicationName', result);
 
-    new File('works/$applicationName/created').writeAsStringSync("Created by Are you being served?");
+    new File('works/$applicationName/created').writeAsStringSync("My Angular Self Service");
 
     result = _runProcess('git' ,['add', '.'],  'works/$applicationName', result);
     result = _runProcess('git' ,['commit', '-m', 'First commit, added branches'],  'works/$applicationName', result);
@@ -206,25 +204,5 @@ class Applications {
 
 
 
-// get all the applications
-  get(req) {
-    var requestContent;
-    req.listen((List<int> buffer) {
-      requestContent = new String.fromCharCodes(buffer);
-    }, onDone: () {
-
-      var url;
-
-      if (requestContent != null) {
-       url = STASH_API_URL;
-      } else {
-        url =STASH_API_URL + '?' +req.uri.query;
-      }
-
-      GenericClient.getlistOfRepos(url, req);
-
-    });
-
-  }
 
 }
