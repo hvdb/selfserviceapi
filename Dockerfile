@@ -20,7 +20,7 @@ ADD works        /container/works
 
 #Link the private npm generator module.
 #WORKDIR /container/setup/generator-submodule
-#RUN npm link
+RUN npm link
 
 WORKDIR /container
 

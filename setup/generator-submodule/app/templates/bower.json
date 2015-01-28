@@ -1,0 +1,19 @@
+{
+    "name": "<%= _.camelize(appName) %>",
+    "version": "0.0.1-SNAPSHOT",
+    "dependencies": {
+        "spectingular-core": "ssh://git@stash.europe.intranet:7999/bow/bower-spectingular-core.git#develop",
+        "spectingular-components": "ssh://git@stash.europe.intranet:7999/bow/bower-spectingular-components.git#develop",
+        "spectingular-dependencies": "ssh://git@stash.europe.intranet:7999/an/spectingular-dependencies.git#develop",
+        "the-guide-styles": "ssh://git@stash.europe.intranet:7999/bow/bower-the-guide-styles.git#develop"
+    },
+    "devDependencies": {
+    },
+    "ignore": [
+        "*",
+        "scripts/**/*",
+        "!app/**/*",
+        "!test/**/*",
+        "!config/**/*"
+    ]
+}

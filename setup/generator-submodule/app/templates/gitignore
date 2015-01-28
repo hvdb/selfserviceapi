@@ -1,0 +1,22 @@
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea
+
+# Netbeans
+nbproject/
+
+# Runtime
+libpeerconnection.log
+coverage
+/test_out
+test-results.xml
+
+# Dependencies
+app/lib
+node_modules
+
+#grunt/node
+.tmp/
+*.log
