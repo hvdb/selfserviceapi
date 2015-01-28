@@ -14,10 +14,10 @@ void main() {
   });
 
 
-  _runProcess('remove dir setup', 'rm', ['-rf', 'setup']);
+// _runProcess('remove dir setup', 'rm', ['-rf', 'setup']);
 
 
-  _runProcess('mkdir setup', 'mkdir', ['setup']);
+//  _runProcess('mkdir setup', 'mkdir', ['setup']);
 
 
 //Checkout generator.

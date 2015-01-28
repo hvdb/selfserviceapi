@@ -13,13 +13,14 @@ ENV PATH $PATH:/nodejs/bin
 
 ADD pubspec.yaml  /container/pubspec.yaml
 ADD pubspec.lock  /container/pubspec.lock
+ADD settings.json /container/settings.json
 ADD lib         /container/lib
 ADD web          /container/web
 ADD setup        /container/setup
 ADD works        /container/works
 
 #Link the private npm generator module.
-#WORKDIR /container/setup/generator-submodule
+WORKDIR /container/setup/generator-submodule
 RUN npm link
 
 WORKDIR /container

@@ -35,6 +35,7 @@ class Applications {
       GenericClient.post(STASH_API_URL, encodedJson).then((HttpClientResponse response) {
         response.transform(UTF8.decoder).listen((contents) {
           streamedContent = streamedContent + contents.toString();
+
         }, onDone: () => _setRepoAdmin(repoAdmin, req, applicationName, streamedContent ));
 
       });
